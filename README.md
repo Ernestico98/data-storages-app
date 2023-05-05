@@ -5,15 +5,11 @@ Project for Data Storages Course
 ## Install
 Create environment
 ```
-python -m venv venv/
+conda env create -f environment.yml
 ```
 
 Activate environment
 ```
-source ./venv/bin/activate
+conda activate my_env
 ```
 
-Install packages
-```
-pip install -r requirements.txt
-```
