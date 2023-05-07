@@ -1,0 +1,27 @@
+[
+    {
+        "PublisherId":1,
+        "Country":"Spain",
+        "Name":"Planeta"
+    },
+    {
+        "PublisherId":2,
+        "Country":"Spain",
+        "Name":"Anagrama"
+    },
+    {
+        "PublisherId":3,
+        "Country":"Russia",
+        "Name":"AST"
+    },
+    {
+        "PublisherId":4,
+        "Country":"Russia",
+        "Name":"Eksmo"
+    },
+    {
+        "PublisherId":5,
+        "Country":"Cuba",
+        "Name":"Gente Nueva"
+    }
+]
