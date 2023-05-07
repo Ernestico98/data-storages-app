@@ -4,7 +4,7 @@ import json
 
 from manager.model_list import MODELS
 
-from manager.dbbasics import add, dict_to_dbinstance
+from manager.dbbasics import add, dict_to_dbinstance, add_from_dict
 
 def populate_tables():
     # First stage, load data from jsons
@@ -19,9 +19,9 @@ def populate_tables():
                 # list of objects
                 if type(content) == list:
                     for pack in content:
-                        add(dict_to_dbinstance(pack, model))
+                        add_from_dict(pack, model.__name__)
                 # only one object
                 else:
-                    add(dict_to_dbinstance(content, model))
+                    add_from_dict(content, model.__name__)
 
     # Second stage, generate some data randomly

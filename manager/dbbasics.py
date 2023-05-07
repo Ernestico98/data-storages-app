@@ -31,6 +31,18 @@ def add(obj, ignore_keys=True):
     con.execute(con_str)
     con.execute("COMMIT")
 
+def add_from_dict(_dict, table_name):
+    columns = ', '.join(name for name, _ in _dict.items())
+    values  = ', '.join(f"'{val}'" if type(val) == str else val for _, val in _dict.items())
+
+    con_str = f"insert into {SCHEMA_NAME}.{table_name} ( {columns} ) values ( { values } )"
+
+    # print('>\n', con_str, '\n')
+
+    con = connect()
+    con.execute(con_str)
+    con.execute("COMMIT")
+
 def update(obj):
     pass
 
