@@ -3,6 +3,7 @@ from manager.models_type import DBMoney, DBDate, DBForeignKey
 from manager.models_type import table_keys
 
 from models.publisher import Publisher
+from models.author import Author
 
 @table_keys('BookId')
 class Book:
@@ -12,3 +13,4 @@ class Book:
     PubishDate = DBDate()
     Price = DBMoney()
     PublisherId = DBForeignKey(Publisher, "PublisherId")
+    AuthorId = DBForeignKey(Author, "AuthorId")
