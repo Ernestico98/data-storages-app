@@ -74,8 +74,8 @@ class DBForeignKey(_DBBasicType):
         vals = vars(table)
         for val_name, val_value in vals.items():
             if val_name == column:
-                assert issubclass(type(val_value), _DBBasicType), "the foreighn attribute most be a sub class of _DBBasicType"
-                assert val_value.base_type is not None, "table basic_type most be not None"
+                assert issubclass(type(val_value), _DBBasicType), "the foreign attribute must be a sub class of _DBBasicType"
+                assert val_value.base_type is not None, "table basic_type must be not None"
                 
                 self.base_type = val_value.base_type
 
