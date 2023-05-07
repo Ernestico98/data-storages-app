@@ -1,21 +1,6 @@
 from manager.models_type import _DBBasicType
 from manager.connection import connect, SCHEMA_NAME
-
-#*****************************************************
-# Here you inscribe your models
-
-from models.book import Book
-from models.publisher import Publisher
-from models.author import Author
-
-# Model list
-MODELS = [
-    Publisher,
-    Author,
-    Book,
-]
-
-#*****************************************************
+from manager.model_list import MODELS
 
 def setup_models():
     sep = ', '
@@ -36,8 +21,14 @@ def setup_models():
             the_type = val_value.make_type_string()
             atributes.append(f"{val_name} {the_type}")
         
-        # create table with name 
-        # add atributes
+        # add multiple keys constraign
+        try:
+            mk = _class._multiple_keys
+        except:
+            mk = []
+        
+        if len(mk) > 0:
+            atributes.append(f"PRIMARY KEY ({sep.join(mk)})")
 
         create_string = f"create table if not exists {name}( {sep.join(atributes)} )"
         
