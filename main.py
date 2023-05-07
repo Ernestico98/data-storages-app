@@ -6,7 +6,7 @@ from manager.populate_tables import populate_tables
 
 if __name__ == "__main__":
     # create tables
-    # setup_models()
+    setup_models()
 
     # fill all tables with some dummy data
     populate_tables()
