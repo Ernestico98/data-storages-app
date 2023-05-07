@@ -1,5 +1,7 @@
 import psycopg2, os
 
+SCHEMA_NAME = 'BookStoreSchema'
+
 def connect():
     database = os.getenv('DATABASE_NAME')
     user = os.getenv('DATABASE_USER')
