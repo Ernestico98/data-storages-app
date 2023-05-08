@@ -9,6 +9,7 @@ def setup_models():
     con.execute(f"create schema if not exists {SCHEMA_NAME}")
 
     for _class in MODELS:
+        
         name = f"{SCHEMA_NAME}.{_class.__name__}"
         atributes = []
 
@@ -30,11 +31,16 @@ def setup_models():
         if len(mk) > 0:
             atributes.append(f"PRIMARY KEY ({sep.join(mk)})")
 
+        print (f'# Start table {name} setup')
+
         create_string = f"create table if not exists {name}( {sep.join(atributes)} )"
         
         # print('>\n', create_string, '\n')
 
         con.execute(create_string)
+
+        print(' Done')
+
     
     con.execute("COMMIT")
 

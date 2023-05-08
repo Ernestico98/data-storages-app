@@ -1,4 +1,5 @@
 import datetime
+from datetime import timezone
 from manager.connection import SCHEMA_NAME
 
 # class DBTable:
@@ -63,6 +64,19 @@ class DBDate(_DBBasicType):
         default = default.strftime("%Y-%m-%d")
 
         self.create_string = f"date DEFAULT \'{default}\' {not_null}"
+
+class DBDatetime(_DBBasicType):
+    create_string = ""
+    value = 0
+    base_type = 'date'
+
+    def __init__(self, default=datetime.datetime.now(timezone.utc), not_null=False) -> None:
+        self.value = default
+
+        not_null = "NOT NULL" if not_null else " "
+        default = default.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3] + 'Z'
+
+        self.create_string = f"timestamp DEFAULT \'{default}\' {not_null}"
 
 class DBForeignKey(_DBBasicType):
     create_string = ""

@@ -9,32 +9,13 @@ from manager.connection import connect, SCHEMA_NAME
 from faker import Faker
 
 
-# def populate_tables():
-#     # First stage, load data from jsons
-#     for model in MODELS:
-#         json_name = os.path.join("data", model.__name__.lower() + ".json")
-        
-#         if os.path.isfile(json_name):
-#             with open(json_name, "r") as file:
-#                 content = file.read()
-#                 content = json.loads(content)
-
-#                 # list of objects
-#                 if type(content) == list:
-#                     for pack in content:
-#                         add_from_dict(pack, model.__name__)
-#                 # only one object
-#                 else:
-#                     add_from_dict(content, model.__name__)
-
-#     # Second stage, generate some data randomly
-
-
 def populate_tables():
     faker = Faker()
 
     # Create 10 users with their user profiles
     con = connect()        
+
+    print ('# Filling <users>')
     for _ in range(10):
         email = faker.email()
         
@@ -44,26 +25,29 @@ def populate_tables():
         userId = con.fetchone()[0]
         walletKey = faker.sha1()
         profilePicture = faker.file_path()
-        country = faker.country()
+        country = faker.country().replace("'", "")
         nickName = faker.user_name()
         fullName = faker.name().replace("'", "")
         description = faker.text().replace("'", "")
 
         con.execute(f"Insert into {SCHEMA_NAME}.userprofile (WalletKey, ProfilePicture, Country, NickName, FullName, Description, UserId) values('{walletKey}', '{profilePicture}', '{country}', '{nickName}', '{fullName}', '{description}', '{userId}')")
 
-    # Create 10 authors and books 
+    # Create 10 authors and books
+    print ('# Filling <author>') 
     for i in range(10):
         first_name = faker.first_name().replace("'", "")
         last_name = faker.last_name().replace("'", "")
         con.execute(f"insert into {SCHEMA_NAME}.author (FirstName, LastName) values('{first_name}', '{last_name}')")
 
     # Create 5 publishers
+    print ('# Filling <publishers>')
     for _ in range(5):
-        country = faker.country()
+        country = faker.country().replace("'", "")
         name = faker.company().replace("'", "")
         con.execute(f"insert into {SCHEMA_NAME}.publisher (Country, Name) values('{country}', '{name}')")
 
     # Create 20 books
+    print ('# Filling <books>')
     for _ in range(20):
         title = faker.text(20).replace("'", "")
         coverImage = faker.file_path()
@@ -80,17 +64,17 @@ def populate_tables():
 
 
     # Create 100 purchases
-    for _ in range(100):
-        con.execute(f"select UserId from {SCHEMA_NAME}.user order by RANDOM() limit 1")
-        userId = con.fetchone()[0]
+    print ('# Filling <purchases>')
+    
+    con.execute(f"select UserId, BookId from {SCHEMA_NAME}.user join {SCHEMA_NAME}.book on 1=1 order by RANDOM() limit 100")
+    pairs = con.fetchall()
 
-        con.execute(f"select BookId from {SCHEMA_NAME}.book order by RANDOM() limit 1")
-        bookId = con.fetchone()[0]
-
+    for userId, bookId in pairs:
         purchaseDate = str(faker.date_time())
-
         con.execute(f"insert into {SCHEMA_NAME}.purchases (UserId, BookId, PurchaseDate) values('{userId}', '{bookId}', '{purchaseDate}')")
 
+    # Create 50 reviews
+    print ('# Filling <reviews>')
     for _ in range(50):
         con.execute(f"select UserId from {SCHEMA_NAME}.user order by RANDOM() limit 1")
         userId = con.fetchone()[0]
