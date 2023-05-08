@@ -75,16 +75,9 @@ def populate_tables():
 
     # Create 50 reviews
     print ('# Filling <reviews>')
-    for _ in range(50):
-        con.execute(f"select UserId from {SCHEMA_NAME}.user order by RANDOM() limit 1")
-        userId = con.fetchone()[0]
-
-        con.execute(f"select BookId from {SCHEMA_NAME}.book order by RANDOM() limit 1")
-        bookId = con.fetchone()[0]
-
+    for userId, bookId in pairs:
         rating = faker.random_int(1, 5)
         comment = faker.text(120).replace("'", "")
-
         con.execute(f"insert into {SCHEMA_NAME}.reviews (UserId, BookId, Rating, Comment) values('{userId}', '{bookId}', '{rating}', '{comment}')")
 
     con.execute('commit')
