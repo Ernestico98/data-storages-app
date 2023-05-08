@@ -43,3 +43,15 @@ The folowing command will create and populate all tables. If they are already cr
 ```shell
 python main.py --setup
 ```
+
+### Query by command line
+Use -q and -d parameters like this
+
+```shell
+python main.py -q get_purchases_by_user -d "{\"UserId\":2}"
+```
+
+-q is the query name
+-d the data in json format
+
+for more information use --help
