@@ -23,14 +23,14 @@ def populate_tables():
         con.execute(f"select userId from {SCHEMA_NAME}.user where email = '{email}'")
         
         userId = con.fetchone()[0]
-        walletKey = faker.sha1()
+        balance = faker.random_int(10, 1000)
         profilePicture = faker.file_path()
         country = faker.country().replace("'", "")
         nickName = faker.user_name()
         fullName = faker.name().replace("'", "")
         description = faker.text().replace("'", "")
 
-        con.execute(f"Insert into {SCHEMA_NAME}.userprofile (WalletKey, ProfilePicture, Country, NickName, FullName, Description, UserId) values('{walletKey}', '{profilePicture}', '{country}', '{nickName}', '{fullName}', '{description}', '{userId}')")
+        con.execute(f"Insert into {SCHEMA_NAME}.userprofile (Balance, ProfilePicture, Country, NickName, FullName, Description, UserId) values('{balance}', '{profilePicture}', '{country}', '{nickName}', '{fullName}', '{description}', '{userId}')")
 
     # Create 10 authors and books
     print ('# Filling <author>') 
