@@ -2,9 +2,7 @@
 Project for Data Storages Course
 
 # TODO
-
-remove script.py
-
+Create some queries
 
 ## Install
 Create environment
