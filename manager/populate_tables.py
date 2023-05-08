@@ -46,24 +46,26 @@ def populate_tables():
         profilePicture = faker.file_path()
         country = faker.country()
         nickName = faker.user_name()
-        fullName = faker.name()
-        description = faker.text()
+        fullName = faker.name().replace("'", "")
+        description = faker.text().replace("'", "")
 
         con.execute(f"Insert into {SCHEMA_NAME}.userprofile (WalletKey, ProfilePicture, Country, NickName, FullName, Description, UserId) values('{walletKey}', '{profilePicture}', '{country}', '{nickName}', '{fullName}', '{description}', '{userId}')")
 
     # Create 10 authors and books 
     for i in range(10):
-        con.execute(f"insert into {SCHEMA_NAME}.author (FirstName, LastName) values('{faker.first_name()}', '{faker.last_name()}')")
+        first_name = faker.first_name().replace("'", "")
+        last_name = faker.last_name().replace("'", "")
+        con.execute(f"insert into {SCHEMA_NAME}.author (FirstName, LastName) values('{first_name}', '{last_name}')")
 
     # Create 5 publishers
     for _ in range(5):
         country = faker.country()
-        name = faker.company()
+        name = faker.company().replace("'", "")
         con.execute(f"insert into {SCHEMA_NAME}.publisher (Country, Name) values('{country}', '{name}')")
 
     # Create 20 books
     for _ in range(20):
-        title = faker.text(20)
+        title = faker.text(20).replace("'", "")
         coverImage = faker.file_path()
         publishDate = faker.date_time().strftime("%Y-%m-%d")
         price = faker.random_int(10, 1000)
@@ -97,7 +99,7 @@ def populate_tables():
         bookId = con.fetchone()[0]
 
         rating = faker.random_int(1, 5)
-        comment = faker.text(120)
+        comment = faker.text(120).replace("'", "")
 
         con.execute(f"insert into {SCHEMA_NAME}.reviews (UserId, BookId, Rating, Comment) values('{userId}', '{bookId}', '{rating}', '{comment}')")
 
