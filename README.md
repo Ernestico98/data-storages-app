@@ -55,3 +55,11 @@ python main.py -q get_purchases_by_user -d "{\"UserId\":2}"
 -d the data in json format
 
 for more information use --help
+
+### Aviable queries
+- -q get_purchases_count
+- -q get_purchases_by_user -d "{\"UserId\" : 1}"
+- -q get_books_by_author -d "{\"FirstName\" : \"John\", \"LastName\" : \"Doe\"}"
+- -q create_user -d "{\"Email\" : \"test@email.com\", \"Password\" : \"password\", \"Role\" : \"admin\"}"
+- -q create_book -d "{\"PublisherId\" : 1, \"AuthorId\" : 1, \"Title\" : \"Title\", \"CoverImage\" : \"Path/to/image\", \"PublishDate\" : \"2023-02-01\", \"Price\" : 123}"
+- -q create_purchase -d "{\"UserId\" : 1, \"BookId\" : 1}"
