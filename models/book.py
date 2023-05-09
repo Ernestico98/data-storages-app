@@ -13,4 +13,3 @@ class Book:
     PublishDate = DBDate()
     Price = DBMoney()
     PublisherId = DBForeignKey(Publisher, "PublisherId")
-    AuthorId = DBForeignKey(Author, "AuthorId")
