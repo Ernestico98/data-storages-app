@@ -9,19 +9,21 @@ from services.purchases_service import get_purchases_count, get_purchases_by_use
 from services.books_service import get_books_by_author, create_book, get_total_sales_by_book, get_top_10_books_by_avg_rating
 from services.users_service import create_user
 
-QUERIES = {
-    "get_purchases_count":get_purchases_count,
-    "get_purchases_by_user":get_purchases_by_user,
-    "get_books_by_author": get_books_by_author,
-    "create_user": create_user,
-    "create_book": create_book,
-    "create_purchase": create_purchase,
-    "get_total_sales_by_book": get_total_sales_by_book,
-    "get_top_10_books_by_avg_rating": get_top_10_books_by_avg_rating
-}
+QUERIES = [
+    get_purchases_count,
+    get_purchases_by_user,
+    get_books_by_author,
+    create_user,
+    create_book,
+    create_purchase,
+    get_total_sales_by_book,
+    get_top_10_books_by_avg_rating,
+]
 
 if __name__ == "__main__":
     args = make_args()
+
+    QUERIES = dict([(f.__name__, f) for f in QUERIES])
 
     if args.setup:
         # drop old tables
