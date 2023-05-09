@@ -34,3 +34,38 @@ def create_book( query_data ):
                 values('{query_data['Title']}', '{query_data['CoverImage']}', '{query_data['PublishDate']}', '{query_data['Price']}', '{query_data['PublisherId']}', '{query_data['AuthorId']}')""")
     
     return "Book created successfully"
+
+def get_total_sales_by_book( query_data ):
+    con = connect()
+
+    con.execute(f"""select b.bookid , b.title , b.publishdate, b.price , count(*) as total_sales  
+                    from {SCHEMA_NAME}.book b 
+                    join {SCHEMA_NAME}.purchases p  on b.bookid  = p.bookid
+                    group by 1,2,3,4
+                    order by 5 desc""")
+
+    table = PrettyTable()
+    table.field_names = ["BookId", "Title", "Publish Date", "Price", "Total Sales"]
+    res = con.fetchall()
+    for row in res:
+        table.add_row(row)
+
+    return table
+
+def get_top_10_books_by_avg_rating( query_data ):
+    con = connect()
+
+    con.execute(f"""select b.bookid , b.title , b.publishdate, b.price , avg(r.rating) as avg_rating  
+                    from {SCHEMA_NAME}.book b 
+                    join {SCHEMA_NAME}.reviews r  on b.bookid  = r.bookid
+                    group by 1,2,3,4
+                    order by 5 desc
+                    limit 10""")
+
+    table = PrettyTable()
+    table.field_names = ["BookId", "Title", "Publish Date", "Price", "Average Rating"]
+    res = con.fetchall()
+    for row in res:
+        table.add_row(row)
+
+    return table
