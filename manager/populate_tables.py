@@ -83,9 +83,6 @@ def populate_tables():
         comment = faker.text(120).replace("'", "")
         con.execute(f"insert into {SCHEMA_NAME}.reviews (UserId, BookId, Rating, Comment) values('{userId}', '{bookId}', '{rating}', '{comment}')")
 
-
-
-
     con.execute('commit')
 
 
