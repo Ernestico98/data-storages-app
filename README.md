@@ -1,9 +1,6 @@
 # data-storages-app
 Project for Data Storages Course
 
-# TODO
-Create some queries
-
 ## Install
 Create environment
 ```
@@ -63,3 +60,5 @@ for more information use --help
 - -q create_user -d "{\"Email\" : \"test@email.com\", \"Password\" : \"password\", \"Role\" : \"admin\"}"
 - -q create_book -d "{\"PublisherId\" : 1, \"AuthorId\" : 1, \"Title\" : \"Title\", \"CoverImage\" : \"Path/to/image\", \"PublishDate\" : \"2023-02-01\", \"Price\" : 123}"
 - -q create_purchase -d "{\"UserId\" : 1, \"BookId\" : 1}"
+- -q get_total_sales_by_book
+- -q get_top_10_books_by_avg_rating
