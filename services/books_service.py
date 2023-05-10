@@ -18,26 +18,46 @@ def get_books_by_author( query_data ):
     return table
 
 def create_book( query_data ):
-
     try:
         con = connect()
-
+        
         con.execute(f"select PublisherId from {SCHEMA_NAME}.publisher where publisherid = {query_data['PublisherId']}")
         pid = con.fetchone()
+        
         if pid == None:
             return "The PublisherId provided was not found, please provide a valid one"
+        author_ids = [str(i) for i in query_data['AuthorIds']]
+        #print(','.join(query_data['AuthorIds']))
+        author_ids_list = ','.join(author_ids)
         
-        con.execute(f"select AuthorId from {SCHEMA_NAME}.author where authorid = {query_data['AuthorId']}")
-        aid = con.fetchone()
-        if aid == None:
-            return "The AuthorId provided was not found, please provide a valid one"
+        con.execute(f"""select count(*) 
+                        from {SCHEMA_NAME}.author 
+                        where authorid in ({author_ids_list})""")
+
+        count = int(con.fetchone()[0])
         
-        con.execute(f"""insert into {SCHEMA_NAME}.book (Title, CoverImage, PublishDate, Price, PublisherId, AuthorId) 
-                    values('{query_data['Title']}', '{query_data['CoverImage']}', '{query_data['PublishDate']}', '{query_data['Price']}', '{query_data['PublisherId']}', '{query_data['AuthorId']}')""")
+        if count != len(author_ids):
+            return "There is/are {count} author that are not registered in the system. Please register them and try again"
+        
+        
+        con.execute(f"""insert into {SCHEMA_NAME}.book (Title, CoverImage, PublishDate, Price, PublisherId) 
+                    values('{query_data['Title']}', '{query_data['CoverImage']}', '{query_data['PublishDate']}',
+                    '{query_data['Price']}', '{query_data['PublisherId']}') RETURNING BookId""")
+
+        book_id = con.fetchone()[0]
+
+        for author_id in query_data['AuthorIds']:
+            con.execute(f"""
+                insert into {SCHEMA_NAME}.writenby (authorid, bookid)
+                values ({author_id}, {book_id})
+            """)
+
         con.execute('commit')
     except:
+
         con.execute("rollback")
         return "Some error has ocurred. Try again please"
+    
     return "Book created successfully"
 
 def get_total_sales_by_book( query_data ):

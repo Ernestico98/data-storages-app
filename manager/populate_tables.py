@@ -47,7 +47,7 @@ def populate_tables():
         con.execute(f"insert into {SCHEMA_NAME}.publisher (Country, Name) values('{country}', '{name}')")
 
     # Create 20 books
-    print ('# Filling <books>')
+    print ('# Filling <books> <writenby>')
     for _ in range(20):
         title = faker.text(20).replace("'", "")
         coverImage = faker.file_path()
