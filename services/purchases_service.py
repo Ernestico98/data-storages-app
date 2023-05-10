@@ -27,6 +27,15 @@ def create_purchase(query_data):
         con.execute("BEGIN")
         con.execute("set TRANSACTION ISOLATION LEVEL SERIALIZABLE;")
 
+        con.execute(f"""select count(*) from {SCHEMA_NAME}.purchases p
+                    where p.userid = '{query_data['UserId']}' and p.bookid = '{query_data['BookId']}'
+                    """)
+        
+        amount_purchases = int(con.fetchone()[0])
+
+        if amount_purchases > 0:
+            return "User already puchased this book"
+
         con.execute(f"""select * from {SCHEMA_NAME}.user u
                         join {SCHEMA_NAME}.userprofile p on u.userid = p.userid
                         where u.userid = {query_data['UserId']}""")
@@ -43,7 +52,6 @@ def create_purchase(query_data):
         user_balance = float(user_data[5].replace("$", ""))
         book_price = float(book_data[4].replace("$", ""))
 
-        print(user_balance, book_price)
         if user_balance < book_price:
             return "The user doesn't have enough balance to purchase the book"
 
