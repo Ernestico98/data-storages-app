@@ -4,10 +4,13 @@ from prettytable import PrettyTable
 
 def get_books_by_author( query_data ):
     con = connect()
-    con.execute(f"""select b.bookid , b.title, b.publishdate, b.price  from {SCHEMA_NAME}.book b 
-                    inner join {SCHEMA_NAME}.author a  on b.authorid  = a.authorid 
-                    where a.firstname = '{query_data['FirstName']}' and a.lastname = '{query_data['LastName']}'
-                """)
+    
+    con.execute(f"""select b.bookid , b.title, b.publishdate, b.price from {SCHEMA_NAME}.book b 
+        inner join {SCHEMA_NAME}.writenby w on b.bookid = w.bookid
+        inner join {SCHEMA_NAME}.author a on w.authorid = a.authorid
+        where lower(a.firstname) like '%{query_data['FirstName'].lower()}%'
+          and lower(a.lastname) like '%{query_data['LastName'].lower()}%'
+    """)
     
     table = PrettyTable()
     table.field_names = ["BookId", "Title", "Publish Date", "Price"]
