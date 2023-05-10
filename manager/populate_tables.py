@@ -57,11 +57,14 @@ def populate_tables():
         con.execute(f"select PublisherId from {SCHEMA_NAME}.publisher order by RANDOM() limit 1")
         publisherId = con.fetchone()[0]
 
-        con.execute(f"select AuthorId from {SCHEMA_NAME}.author order by RANDOM() limit 1")
-        authorId = con.fetchone()[0]
-
-        con.execute(f"insert into {SCHEMA_NAME}.book (Title, CoverImage, PublishDate, Price, PublisherId, AuthorId) values('{title}', '{coverImage}', '{publishDate}', '{price}', '{publisherId}', '{authorId}')")
-
+        con.execute(f"insert into {SCHEMA_NAME}.book (Title, CoverImage, PublishDate, Price, PublisherId) values('{title}', '{coverImage}', '{publishDate}', '{price}', '{publisherId}') returning BookId")
+        bookId = con.fetchone()[0]
+        
+        n_authors = faker.random_int() % 4 + 1 # up to 4 authors
+        con.execute(f"\
+                        insert into {SCHEMA_NAME}.writenby(AuthorId, BookId) \
+                        select AuthorId, {bookId} as BookId from {SCHEMA_NAME}.author order by RANDOM() limit {n_authors}; \
+                    ")
 
     # Create 100 purchases
     print ('# Filling <purchases>')
