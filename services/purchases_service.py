@@ -1,5 +1,6 @@
 from manager.connection import connect, SCHEMA_NAME
 import datetime
+from prettytable import PrettyTable
 
 def get_purchases_count(guery_data):
     con = connect()
@@ -18,7 +19,12 @@ def get_purchases_by_user(guery_data):
 
     sol = con.fetchall()
 
-    return sol
+    table = PrettyTable()
+    table.field_names = ["UserId", "BookId", "PurchaseDate"]
+    for row in sol:
+        table.add_row(row)
+    
+    return table
 
 def create_purchase(query_data):
     try:
