@@ -18,7 +18,6 @@ def get_books_by_author( query_data ):
     return table
 
 def create_book( query_data ):
-
     try:
         con = connect()
         
@@ -42,21 +41,23 @@ def create_book( query_data ):
         
         
         con.execute(f"""insert into {SCHEMA_NAME}.book (Title, CoverImage, PublishDate, Price, PublisherId) 
-                    values('{query_data['Title']}', '{query_data['CoverImage']}', '{query_data['PublishDate']}', '{query_data['Price']}', '{query_data['PublisherId']}'""")
-        
-        print("aqui")
-        book_id = con.execute("SELECT LAST_INSERT_ID()").fetchone()[0]
-        print("book_id", book_id)
+                    values('{query_data['Title']}', '{query_data['CoverImage']}', '{query_data['PublishDate']}',
+                    '{query_data['Price']}', '{query_data['PublisherId']}') RETURNING BookId""")
+
+        book_id = con.fetchone()[0]
+
         for author_id in query_data['AuthorIds']:
             con.execute(f"""
                 insert into {SCHEMA_NAME}.writenby (authorid, bookid)
-                values ({author_id, book_id})
+                values ({author_id}, {book_id})
             """)
 
         con.execute('commit')
     except:
+
         con.execute("rollback")
         return "Some error has ocurred. Try again please"
+    
     return "Book created successfully"
 
 def get_total_sales_by_book( query_data ):
