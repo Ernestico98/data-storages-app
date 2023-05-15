@@ -11,8 +11,8 @@ def get_purchases_count(guery_data):
     return ctn[0]
 
 
-def get_purchases_by_user(guery_data):
-    UserId = guery_data['UserId']
+def get_purchases_by_user(query_data):
+    UserId = query_data['UserId']
 
     con = connect()
     con.execute(f"select * from {SCHEMA_NAME}.purchases where UserId={UserId}")
