@@ -62,3 +62,8 @@ for more information use --help
 - -q create_purchase -d "{\"UserId\" : 1, \"BooksIds\" : [1, 2]}"
 - -q get_total_sales_by_book
 - -q get_top_10_books_by_avg_rating
+- -q add_to_cart -d "{\"UserId\" : 1, \"BookId\" : 1}"
+- -q remove_from_cart -d "{\"UserId\" : 1, \"BookId\" : 1}"
+- -q clear_cart -d "{\"UserId\" : 1}"
+- -q purchase_from_cart -d "{\"UserId\" : 1}"
+- -q get_cart_contents -d "{\"UserId\" : 1}"
