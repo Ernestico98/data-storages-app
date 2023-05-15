@@ -1,4 +1,4 @@
-import psycopg2, os
+import psycopg2, os, redis
 
 SCHEMA_NAME = 'BookStoreSchema'
 
@@ -13,3 +13,12 @@ def connect():
                             password=password, host=host, port=port)
     
     return conn.cursor()
+
+def connect_rc():
+    host = os.getenv('REDIS_HOST')
+    port = os.getenv('REDIS_PORT')
+    pwd  = os.getenv('REDIS_PASSWORD')
+
+    rc = redis.Redis(host=host,port=port,password=pwd) 
+
+    return rc
