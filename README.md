@@ -67,3 +67,8 @@ for more information use --help
 - -q clear_cart -d "{\"UserId\" : 1}"
 - -q purchase_from_cart -d "{\"UserId\" : 1}"
 - -q get_cart_contents -d "{\"UserId\" : 1}"
+
+### Managing high RPS using redis
+#### Scenario 1: "Creation of shoping cart"
+
+There were 5 methods (add_to_cart, remove_from_cart, clear_cart, purchase_from_cart, get_cart_contents) implemented to support this functionality. Basically a unique key ("{SCHEMA}_shop_cart_{UserId}") is assigned to each user to store a set of ids of books in the user's cart. Also each key has a TTL of 60 minutes and is refreshed each time an operation with this key is made.
