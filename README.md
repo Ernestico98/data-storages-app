@@ -59,6 +59,6 @@ for more information use --help
 - -q get_books_by_author -d "{\"FirstName\" : \"John\", \"LastName\" : \"Doe\"}"
 - -q create_user -d "{\"Email\" : \"test@email.com\", \"Password\" : \"password\", \"Role\" : \"admin\"}"
 - -q create_book -d "{\"PublisherId\" : 1, \"AuthorIds\" : [1], \"Title\" : \"Title\", \"CoverImage\" : \"Path/to/image\", \"PublishDate\" : \"2023-02-01\", \"Price\" : 123}"
-- -q create_purchase -d "{\"UserId\" : 1, \"BookId\" : 1}"
+- -q create_purchase -d "{\"UserId\" : 1, \"BooksIds\" : [1, 2]}"
 - -q get_total_sales_by_book
 - -q get_top_10_books_by_avg_rating
