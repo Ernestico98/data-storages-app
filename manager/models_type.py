@@ -2,11 +2,6 @@ import datetime
 from datetime import timezone
 from manager.connection import SCHEMA_NAME
 
-# class DBTable:
-#     def __init__(self) -> None:
-#         # send to all foreign keys the table name
-#         print (self.__name__)
-
 class _DBBasicType:
     create_string = ""
     base_type = None
