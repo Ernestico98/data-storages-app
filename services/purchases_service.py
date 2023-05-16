@@ -35,8 +35,6 @@ def get_purchases_by_user(query_data):
         table.add_row(row)
     
     return table
-
-def get_purchases_by_user(query_data):
     try:
          # invalidate cache for get_purchases_by_user
         rc = connect_rc()
