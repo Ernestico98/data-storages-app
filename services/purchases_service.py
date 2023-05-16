@@ -52,6 +52,13 @@ def add_to_cart(query_data):
         rc = connect_rc()
         cart_key = f"{SCHEMA_NAME}_shop_cart_{query_data['UserId']}"
         rc.sadd(cart_key, query_data['BookId'])
+
+        # fast stats 
+        value_key = f"{SCHEMA_NAME}_stbookcart_{query_data['BookId']}"
+        current_value = rc.get(value_key)
+        current_value = 0 if current_value is None else current_value
+        current_value += 1
+        rc.set(value_key, current_value)
         
     except Exception as e:
         error_message = str(e)
@@ -66,6 +73,14 @@ def remove_from_cart(query_data):
         rc = connect_rc()
         cart_key = f"{SCHEMA_NAME}_shop_cart_{query_data['UserId']}"
         rc.srem(cart_key, query_data['BookId'])
+
+        # fast stats 
+        value_key = f"{SCHEMA_NAME}_stbookcart_{query_data['BookId']}"
+        current_value = rc.get(value_key)
+        current_value = 0 if current_value is None else current_value
+        current_value = max(0, current_value-1)
+        rc.set(value_key, current_value)
+
     except Exception as e:
         error_message = str(e)
         return f"Some error has occurred. Error message: {error_message}"
@@ -96,6 +111,16 @@ def clear_cart(query_data):
     try:
         rc = connect_rc()
         cart_key = f"{SCHEMA_NAME}_shop_cart_{query_data['UserId']}"
+
+        # fast stats 
+        cart_items = rc.smembers(cart_key)
+        for item in cart_items:    
+            value_key = f"{SCHEMA_NAME}_stbookcart_{item}"
+            current_value = rc.get(value_key)
+            current_value = 0 if current_value is None else current_value
+            current_value = max(0, current_value-1)
+            rc.set(value_key, current_value)
+
         rc.delete(cart_key)
     except Exception as e:
         error_message = str(e)
@@ -169,6 +194,15 @@ def create_purchase(query_data):
         """)
 
         con.execute("commit")
+
+        # fast stats 
+        for bid in query_data['BooksIds']:
+            value_key = f"{SCHEMA_NAME}_stbookbuy_{bid}"
+            current_value = rc.get(value_key)
+            current_value = 0 if current_value is None else current_value
+            current_value += 1
+            rc.set(value_key, current_value)
+
     except Exception as e:
         con.execute("ROLLBACK")
         error_message = str(e)

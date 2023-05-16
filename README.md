@@ -73,6 +73,14 @@ for more information use --help
 
 There were 5 methods (add_to_cart, remove_from_cart, clear_cart, purchase_from_cart, get_cart_contents) implemented to support this functionality. Basically a unique key ("{SCHEMA}\_shop_cart\_{UserId}") is assigned to each user to store a set of ids of books in the user's cart. Also each key has a TTL of 60 minutes and is refreshed each time an operation with this key is made.
 
+
+In addition, a general statistic of the status of book sales can be obtained with the method:
+
+- -q get_purchases_book_stats
+- -q reset_stats
+
+It returns how many times a book was purchased for each book, and what quantity is still in the cart. The second, slower version, recalculates the statistics and stores them in reedis as a cache.
+
 #### Scenario 2: "Caching some SQL queries"
 - `get_books_by_author`: Cache SQL query to get the books per author.
 - `create_book`: Invalidates prevoius cache for corresponding authors.
