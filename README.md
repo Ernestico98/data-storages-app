@@ -59,6 +59,16 @@ for more information use --help
 - -q get_books_by_author -d "{\"FirstName\" : \"John\", \"LastName\" : \"Doe\"}"
 - -q create_user -d "{\"Email\" : \"test@email.com\", \"Password\" : \"password\", \"Role\" : \"admin\"}"
 - -q create_book -d "{\"PublisherId\" : 1, \"AuthorIds\" : [1], \"Title\" : \"Title\", \"CoverImage\" : \"Path/to/image\", \"PublishDate\" : \"2023-02-01\", \"Price\" : 123}"
-- -q create_purchase -d "{\"UserId\" : 1, \"BookId\" : 1}"
+- -q create_purchase -d "{\"UserId\" : 1, \"BooksIds\" : [1, 2]}"
 - -q get_total_sales_by_book
 - -q get_top_10_books_by_avg_rating
+- -q add_to_cart -d "{\"UserId\" : 1, \"BookId\" : 1}"
+- -q remove_from_cart -d "{\"UserId\" : 1, \"BookId\" : 1}"
+- -q clear_cart -d "{\"UserId\" : 1}"
+- -q purchase_from_cart -d "{\"UserId\" : 1}"
+- -q get_cart_contents -d "{\"UserId\" : 1}"
+
+### Managing high RPS using redis
+#### Scenario 1: "Creation of shoping cart"
+
+There were 5 methods (add_to_cart, remove_from_cart, clear_cart, purchase_from_cart, get_cart_contents) implemented to support this functionality. Basically a unique key ("{SCHEMA}\_shop_cart\_{UserId}") is assigned to each user to store a set of ids of books in the user's cart. Also each key has a TTL of 60 minutes and is refreshed each time an operation with this key is made.
