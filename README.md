@@ -53,7 +53,7 @@ python main.py -q get_purchases_by_user -d "{\"UserId\":2}"
 
 for more information use --help
 
-### Aviable queries
+### Available queries
 - -q get_purchases_count
 - -q get_purchases_by_user -d "{\"UserId\" : 1}"
 - -q get_books_by_author -d "{\"FirstName\" : \"John\", \"LastName\" : \"Doe\"}"
