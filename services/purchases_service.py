@@ -1,6 +1,8 @@
 from manager.connection import connect, SCHEMA_NAME, connect_rc, TTL_IN_SECONDS
 import datetime
 from prettytable import PrettyTable
+import json
+from utils import datetime_deserializer, datetime_serializer
 
 def get_purchases_count(guery_data):
     con = connect()
@@ -11,13 +13,21 @@ def get_purchases_count(guery_data):
     return ctn[0]
 
 
-def get_purchases_by_user(guery_data):
-    UserId = guery_data['UserId']
+def get_purchases_by_user(query_data):
+    UserId = query_data['UserId']
 
     con = connect()
-    con.execute(f"select * from {SCHEMA_NAME}.purchases where UserId={UserId}")
+    rc = connect_rc()
 
-    sol = con.fetchall()
+    cache_str = f"""{SCHEMA_NAME}_CACHE_get_purchases_by_user_{UserId}"""
+    if rc.exists(cache_str):
+        print('Is in cache')
+        sol = json.loads(rc.get(cache_str), object_hook=datetime_deserializer)
+    else:
+        print('Is not in cache')
+        con.execute(f"select * from {SCHEMA_NAME}.purchases where UserId={UserId}")
+        sol = con.fetchall()
+        rc.set(cache_str, json.dumps(sol, default=datetime_serializer))
 
     table = PrettyTable()
     table.field_names = ["UserId", "BookId", "PurchaseDate"]
@@ -26,6 +36,11 @@ def get_purchases_by_user(guery_data):
     
     return table
     try:
+         # invalidate cache for get_purchases_by_user
+        rc = connect_rc()
+        cache_str = f"""{SCHEMA_NAME}_CACHE_get_purchases_by_user_{query_data["UserId"]}"""
+        rc.delete(cache_str)
+
 
         con = connect()
         con.execute("BEGIN")
@@ -70,7 +85,9 @@ def get_purchases_by_user(guery_data):
         """)
 
         con.execute("commit")
-    except:
+
+    except Exception as exception:
+        print(exception)
         con.execute("rollback")
         return "Some error has ocurred. Try again please"    
     return "Purchase created successfully"
