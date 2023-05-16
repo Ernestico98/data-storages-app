@@ -1,4 +1,4 @@
-from manager.connection import connect, SCHEMA_NAME, connect_rc, TTL_IN_SECONDS
+from manager.connection import connect, SCHEMA_NAME, connect_rc
 import datetime
 from prettytable import PrettyTable
 import json
@@ -52,12 +52,18 @@ def add_to_cart(query_data):
         rc = connect_rc()
         cart_key = f"{SCHEMA_NAME}_shop_cart_{query_data['UserId']}"
         rc.sadd(cart_key, query_data['BookId'])
+
+        # fast stats 
+        value_key = f"{SCHEMA_NAME}_stbookcart_{query_data['BookId']}"
+        current_value = rc.get(value_key)
+        current_value = 0 if current_value is None else int(current_value)
+        current_value += 1
+        rc.set(value_key, current_value)
         
     except Exception as e:
         error_message = str(e)
         return f"Some error has occurred. Error message: {error_message}"
     
-    rc.expire(cart_key, TTL_IN_SECONDS)
     return "Book added successfully to the cart"
 
 def remove_from_cart(query_data):
@@ -66,11 +72,18 @@ def remove_from_cart(query_data):
         rc = connect_rc()
         cart_key = f"{SCHEMA_NAME}_shop_cart_{query_data['UserId']}"
         rc.srem(cart_key, query_data['BookId'])
+
+        # fast stats 
+        value_key = f"{SCHEMA_NAME}_stbookcart_{query_data['BookId']}"
+        current_value = rc.get(value_key)
+        current_value = 0 if current_value is None else int(current_value)
+        current_value = max(0, current_value-1)
+        rc.set(value_key, current_value)
+
     except Exception as e:
         error_message = str(e)
         return f"Some error has occurred. Error message: {error_message}"
     
-    rc.expire(cart_key, TTL_IN_SECONDS)
     return "Book removed successfully"
 
 def purchase_from_cart(query_data):
@@ -88,7 +101,6 @@ def get_cart_contents(query_data):
     cart_key = f"{SCHEMA_NAME}_shop_cart_{query_data['UserId']}"
     cart_items = rc.smembers(cart_key)
     cart_ids = [int(item) for item in cart_items]
-    rc.expire(cart_key, TTL_IN_SECONDS)
     return cart_ids
 
 def clear_cart(query_data):
@@ -96,6 +108,13 @@ def clear_cart(query_data):
     try:
         rc = connect_rc()
         cart_key = f"{SCHEMA_NAME}_shop_cart_{query_data['UserId']}"
+
+        # fast stats 
+        cart_items = rc.smembers(cart_key)
+        for item in cart_items:    
+            value_key = f"{SCHEMA_NAME}_stbookcart_{int(item)}"
+            rc.delete(value_key)
+
         rc.delete(cart_key)
     except Exception as e:
         error_message = str(e)
@@ -169,6 +188,15 @@ def create_purchase(query_data):
         """)
 
         con.execute("commit")
+
+        # fast stats 
+        for bid in query_data['BooksIds']:
+            value_key = f"{SCHEMA_NAME}_stbookbuy_{int(bid)}"
+            current_value = rc.get(value_key)
+            current_value = 0 if current_value is None else int(current_value)
+            current_value += 1
+            rc.set(value_key, current_value)
+
     except Exception as e:
         con.execute("ROLLBACK")
         error_message = str(e)
