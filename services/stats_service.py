@@ -1,5 +1,6 @@
 from manager.connection import connect_rc, connect, SCHEMA_NAME
 from prettytable import PrettyTable
+from collections import Counter
 
 def get_purchases_book_stats(args):
     rc = connect_rc()
@@ -50,6 +51,21 @@ def reset_stats(args):
         for bookid, total in pairs: 
             value_key = f"{SCHEMA_NAME}_stbookbuy_{bookid}"
             rc.set(value_key, total)
+        
+        keys = rc.keys(f'{SCHEMA_NAME}_shop_cart_*')
+        counter = Counter()
+
+        for key in keys:
+            cart_items = rc.smembers(key)
+            cart_ids = [int(item) for item in cart_items]
+            counter.update(cart_ids)
+        
+        del keys 
+        for key, val in counter.items():
+            value_key = f"{SCHEMA_NAME}_stbookcart_{int(key)}"
+            rc.set(value_key, val)
+
+
     except Exception as e:
         error_message = str(e)
         return f"Some error has occurred. Error message: {error_message}"
