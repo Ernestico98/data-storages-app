@@ -72,3 +72,9 @@ for more information use --help
 #### Scenario 1: "Creation of shoping cart"
 
 There were 5 methods (add_to_cart, remove_from_cart, clear_cart, purchase_from_cart, get_cart_contents) implemented to support this functionality. Basically a unique key ("{SCHEMA}\_shop_cart\_{UserId}") is assigned to each user to store a set of ids of books in the user's cart. Also each key has a TTL of 60 minutes and is refreshed each time an operation with this key is made.
+
+#### Scenario 2: "Caching some SQL queries"
+- `get_books_by_author`: Cache SQL query to get the books per author.
+- `create_book`: Invalidates prevoius cache for corresponding authors.
+- `get_purchases_by_user`: Cache SQL query to get the purchases made by an user.
+- `create_purchase`: Invalidates previous cache for corresponding user making purchase. 
