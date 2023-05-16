@@ -1,6 +1,7 @@
 import psycopg2, os, redis
 
 SCHEMA_NAME = 'BookStoreSchema'
+TTL_IN_SECONDS = 3600  # 60 minutes
 
 def connect():
     database = os.getenv('DATABASE_NAME')

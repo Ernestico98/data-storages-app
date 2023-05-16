@@ -1,20 +1,30 @@
-from manager.connection import connect, SCHEMA_NAME
+from manager.connection import connect, SCHEMA_NAME, connect_rc
 from prettytable import PrettyTable
+from utils import datetime_deserializer, datetime_serializer
+import json
 
 
 def get_books_by_author( query_data ):
     con = connect()
+    rc = connect_rc()
     
-    con.execute(f"""select b.bookid , b.title, b.publishdate, b.price from {SCHEMA_NAME}.book b 
-        inner join {SCHEMA_NAME}.writenby w on b.bookid = w.bookid
-        inner join {SCHEMA_NAME}.author a on w.authorid = a.authorid
-        where lower(a.firstname) like '%{query_data['FirstName'].lower()}%'
-          and lower(a.lastname) like '%{query_data['LastName'].lower()}%'
-    """)
+    cache_str = f"{SCHEMA_NAME}_CACHE_get_books_by_author_{query_data['FirstName'].lower()}_{query_data['LastName'].lower()}"
+    if rc.exists(cache_str):
+        print('Is in cache')
+        res = json.loads(rc.get(cache_str), object_hook=datetime_deserializer)
+    else:
+        print('Is not in cache')
+        con.execute(f"""select b.bookid , b.title, b.publishdate, b.price from {SCHEMA_NAME}.book b 
+            inner join {SCHEMA_NAME}.writenby w on b.bookid = w.bookid
+            inner join {SCHEMA_NAME}.author a on w.authorid = a.authorid
+            where lower(a.firstname) like '%{query_data['FirstName'].lower()}%'
+            and lower(a.lastname) like '%{query_data['LastName'].lower()}%'
+        """)
+        res = con.fetchall()
+        rc.set(cache_str, json.dumps(res, default=datetime_serializer))
     
     table = PrettyTable()
     table.field_names = ["BookId", "Title", "Publish Date", "Price"]
-    res = con.fetchall()
     for row in res:
         table.add_row(row)
     
@@ -23,7 +33,8 @@ def get_books_by_author( query_data ):
 def create_book( query_data ):
     try:
         con = connect()
-        
+        rc = connect_rc()
+
         con.execute(f"select PublisherId from {SCHEMA_NAME}.publisher where publisherid = {query_data['PublisherId']}")
         pid = con.fetchone()
         
@@ -54,10 +65,17 @@ def create_book( query_data ):
                 insert into {SCHEMA_NAME}.writenby (authorid, bookid)
                 values ({author_id}, {book_id})
             """)
+            
+            # invalidate get_books_by_author cache
+            con.execute(f"""select FirstName, LastName from {SCHEMA_NAME}.author where AuthorId='{author_id}'""")
+            firstName, lastName = con.fetchone()
+            cache_str = f"{SCHEMA_NAME}_CACHE_get_books_by_author_{firstName.lower()}_{lastName.lower()}"
+            rc.delete(cache_str)
+            
 
         con.execute('commit')
-    except:
-
+    except Exception as exception:
+        print(exception)
         con.execute("rollback")
         return "Some error has ocurred. Try again please"
     
