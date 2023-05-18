@@ -13,6 +13,5 @@ class DataMart:
     Fecha = DBDatetime()
     Price = DBMoney()
     ReviewAtBuy = DBFloat()
-    UserReview = DBInt()
     CartNumberAtBuy = DBInt()
     
