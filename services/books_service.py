@@ -126,7 +126,7 @@ def set_book_review( query_data:dict ):
         rating = int(query_data["Rating"])
         comment = query_data.get("Comment", '')
 
-        assert rating >= 0 and rating <= 5, "Rating most be in the range [0,5]"
+        assert rating >= 0 and rating <= 5, "Rating must be in the range [0,5]"
         
         con.execute(f"""insert into {SCHEMA_NAME}.reviews (UserId, BookId, Rating, Comment) 
                     values('{userid}', '{bookid}', '{rating}', '{comment}')""")
