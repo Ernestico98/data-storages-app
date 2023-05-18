@@ -13,6 +13,9 @@ from models.writenby import WritenBy
 from models.reviews import Reviews
 from models.purchases import Purchases
 
+#DataMart Tables
+from models.datamart import DataMart
+
 
 # Model list
 MODELS = [
@@ -24,6 +27,7 @@ MODELS = [
     UserProfile,
     Reviews,
     Purchases,
+    DataMart,
 ]
 
 #*****************************************************
