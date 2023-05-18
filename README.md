@@ -82,8 +82,13 @@ In addition, a general statistic of the status of book sales can be obtained wit
 
 It returns how many times a book was purchased for each book, and what quantity is still in the cart. The second, slower version, recalculates the statistics and stores them in reedis as a cache.
 
+In set_book_review function, it is kept with the key: 
+"{SCHEMA_NAME}_reviewmean_{BookId}"
+a chain that representing "{first number}:{second number}".
+The first number is the sum of the book reviews and the second is the number of reviews of that book, which will be used by other processes to quickly calculate the average.
+
 #### Scenario 2: "Caching some SQL queries"
 - `get_books_by_author`: Cache SQL query to get the books per author.
 - `create_book`: Invalidates prevoius cache for corresponding authors.
 - `get_purchases_by_user`: Cache SQL query to get the purchases made by an user.
-- `create_purchase`: Invalidates previous cache for corresponding user making purchase. 
+- `create_purchase`: Invalidates previous cache for corresponding user making purchase.  
