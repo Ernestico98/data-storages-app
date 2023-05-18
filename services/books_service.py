@@ -115,3 +115,43 @@ def get_top_10_books_by_avg_rating( query_data ):
         table.add_row(row)
 
     return table
+
+def set_book_review( query_data:dict ):
+    try:
+        con = connect()
+        rc = connect_rc()
+
+        userid = int(query_data["UserId"])
+        bookid = int(query_data["BookId"])
+        rating = int(query_data["Rating"])
+        comment = query_data.get("Comment", '')
+
+        assert rating >= 0 and rating <= 5, "Rating most be in the range [0,5]"
+        
+        con.execute(f"""insert into {SCHEMA_NAME}.reviews (UserId, BookId, Rating, Comment) 
+                    values('{userid}', '{bookid}', '{rating}', '{comment}')""")
+
+        # redis cache for the reviews   
+        var_name = f"{SCHEMA_NAME}_reviewmean_{bookid}"
+        value = rc.get(var_name)
+        value = value.decode() if value is not None else "0:0"
+        value = value.split(":")
+
+        sum_, ctn_ = int(value[0]), int(value[1])
+
+        sum_ += rating
+        ctn_ += 1 
+
+        value = f"{sum_}:{ctn_}"
+        
+        rc.set(var_name, value)
+
+        con.execute('commit')
+
+    except Exception as exception:
+        print(exception)
+        con.execute("rollback")
+        return "Some error has ocurred. Try again please"
+
+    return "Review created successfully"
+    

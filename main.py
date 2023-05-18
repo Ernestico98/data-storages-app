@@ -6,7 +6,7 @@ from manager.setup_models import setup_models
 from manager.populate_tables import populate_tables, drop_tables
 
 from services.purchases_service import get_purchases_count, get_purchases_by_user, create_purchase, add_to_cart, remove_from_cart, clear_cart, purchase_from_cart, get_cart_contents
-from services.books_service import get_books_by_author, create_book, get_total_sales_by_book, get_top_10_books_by_avg_rating
+from services.books_service import get_books_by_author, create_book, get_total_sales_by_book, get_top_10_books_by_avg_rating, set_book_review
 from services.users_service import create_user
 from services.stats_service import reset_stats, get_purchases_book_stats
 
@@ -26,6 +26,7 @@ QUERIES = [
     get_cart_contents,
     reset_stats,
     get_purchases_book_stats,
+    set_book_review
 ]
 
 if __name__ == "__main__":
