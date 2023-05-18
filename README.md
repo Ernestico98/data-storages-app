@@ -67,6 +67,7 @@ for more information use --help
 - -q clear_cart -d "{\"UserId\" : 1}"
 - -q purchase_from_cart -d "{\"UserId\" : 1}"
 - -q get_cart_contents -d "{\"UserId\" : 1}"
+- -q set_book_review -d "{\"UserId\" : 1, \"BookId\" : 1, \"Comment\" : \"\", \"Rating\" : 5}"
 
 ### Managing high RPS using redis
 #### Scenario 1: "Creation of shoping cart"
