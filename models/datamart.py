@@ -11,7 +11,7 @@ class DataMart:
     UserId = DBForeignKey(User, "UserId")
     BookId = DBForeignKey(Book, "BookId")
     Fecha = DBDatetime()
-    Precio = DBMoney()
+    Price = DBMoney()
     ReviewAtBuy = DBFloat()
     UserReview = DBInt()
     CartNumberAtBuy = DBInt()
