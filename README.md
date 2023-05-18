@@ -85,7 +85,7 @@ It returns how many times a book was purchased for each book, and what quantity 
 In set_book_review function, it is kept with the key: 
 "{SCHEMA_NAME}_reviewmean_{BookId}"
 a chain that representing "{first number}:{second number}".
-The first number is the sum of the book reviews and the second is the number of reviews of that book, which will be used by other processes to quickly calculate the average.
+The first number is the sum of the book reviews and the second is the number of reviews of that book, which will be used by other processes to quickly calculate the average rating.
 
 #### Scenario 2: "Caching some SQL queries"
 - `get_books_by_author`: Cache SQL query to get the books per author.
