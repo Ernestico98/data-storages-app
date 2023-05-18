@@ -169,8 +169,8 @@ def create_purchase(query_data):
                     """)
 
         total_price = con.fetchone()[0]
-        user_balance = float(user_data[5].replace("$", ""))
-        books_price = float(total_price.replace("$", ""))
+        user_balance = float(user_data[5].replace("$", "").replace(",", ""))
+        books_price = float(total_price.replace("$", "").replace(",", ""))
 
         if user_balance < books_price:
             return "The user doesn't have enough balance to purchase the book"
@@ -197,9 +197,46 @@ def create_purchase(query_data):
             current_value += 1
             rc.set(value_key, current_value)
 
+        #  add purchase info to data mart
+        for i in books_ids_str:
+            create_data_mart_entry(query_data['UserId'], i, now)
+
     except Exception as e:
         con.execute("ROLLBACK")
         error_message = str(e)
         return f"Some error has occurred. Error message: {error_message}"
     return "Purchase created successfully"
 
+
+def create_data_mart_entry(userId, bookId, date):
+    try:
+        con = connect()
+        rc = connect_rc()
+        con.execute(f"""select Price from {SCHEMA_NAME}.Book where BookId='{bookId}'""")
+
+        price = float(con.fetchone()[0].replace("$", "").replace(",", ""))
+
+        var_name = f"{SCHEMA_NAME}_reviewmean_{bookId}"
+        value = rc.get(var_name)
+        value = value.decode() if value is not None else "0:0"
+        value = value.split(":")
+        sum, cnt = int(value[0]), int(value[1])
+        rating = 0 if cnt == 0 else sum / cnt
+
+        # get amount of this book in some user's cart (This is stored in redis)
+        value_key = f"{SCHEMA_NAME}_stbookcart_{bookId}"
+        amount_in_cart = rc.get(value_key)
+        amount_in_cart = (0 if amount_in_cart is None else int(amount_in_cart)) + 1
+
+        # amount bought at buy time
+        con.execute(f"""select count(*) from {SCHEMA_NAME}.purchases where BookId='{bookId}'""")
+        amount_bought = con.fetchone()[0]
+        
+        con.execute(f"""insert into {SCHEMA_NAME}.datamart (UserId, BookId, DateTime, Price, RatingAtBuy, CartNumberAtBuy, BoughtNumberAtBut) \
+                        values('{userId}', '{bookId}', '{date}', '{price}', '{rating}', '{amount_in_cart}', '{amount_bought}')
+                    """)
+        con.execute('commit')
+    except Exception as e:
+        error_message = str(e)
+        return f"Some error has occurred. Error message: {error_message}"
+    
