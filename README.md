@@ -69,7 +69,7 @@ for more information use --help
 - -q get_cart_contents -d '{\"UserId\" : 1}'
 - -q set_book_review -d '{\"UserId\" : 1, \"BookId\" : 1, \"Comment\" : \"\", \"Rating\" : 5}'
 
-### Anlalytical queries using DataMart
+### Analytical queries using DataMart
 - -q top_ten_users_by_purchases
 - -q total_revenue_per_book
 - -q total_revenue__vs_rating
