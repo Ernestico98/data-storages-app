@@ -232,7 +232,7 @@ def create_data_mart_entry(userId, bookId, date):
         con.execute(f"""select count(*) from {SCHEMA_NAME}.purchases where BookId='{bookId}'""")
         amount_bought = con.fetchone()[0]
         
-        con.execute(f"""insert into {SCHEMA_NAME}.datamart (UserId, BookId, DateTime, Price, RatingAtBuy, CartNumberAtBuy, BoughtNumberAtBut) \
+        con.execute(f"""insert into {SCHEMA_NAME}.datamart (UserId, BookId, DateTime, Price, Rating, Amount_In_Cart, Purchased_Amount) \
                         values('{userId}', '{bookId}', '{date}', '{price}', '{rating}', '{amount_in_cart}', '{amount_bought}')
                     """)
         con.execute('commit')
