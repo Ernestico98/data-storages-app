@@ -48,7 +48,7 @@ def total_revenue_per_book( query_data ):
 
     plt.show()
 
-def correlation_total_revenue_rating( query_data ):
+def total_revenue__vs_rating( query_data ):
     con = connect()
     con.execute(f"""SELECT d.bookid, total_revenue, avg_rating
                     FROM (
