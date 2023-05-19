@@ -1,10 +1,14 @@
 # this code comes after the table creation.
 import os
 import json
+import random
 
 from manager.model_list import MODELS
 from manager.dbbasics import add, dict_to_dbinstance, add_from_dict
-from manager.connection import connect, SCHEMA_NAME
+from manager.connection import connect, SCHEMA_NAME, connect_rc
+
+from services.books_service import set_book_review
+from services.purchases_service import add_to_cart, purchase_from_cart
 
 from faker import Faker
 
@@ -65,25 +69,61 @@ def populate_tables():
                         insert into {SCHEMA_NAME}.writenby(AuthorId, BookId) \
                         select AuthorId, {bookId} as BookId from {SCHEMA_NAME}.author order by RANDOM() limit {n_authors}; \
                     ")
-
-    # Create 100 purchases
-    print ('# Filling <purchases>')
-    
-    con.execute(f"select UserId, BookId from {SCHEMA_NAME}.user join {SCHEMA_NAME}.book on 1=1 order by RANDOM() limit 100")
-    pairs = con.fetchall()
-
-    for userId, bookId in pairs:
-        purchaseDate = str(faker.date_time())
-        con.execute(f"insert into {SCHEMA_NAME}.purchases (UserId, BookId, PurchaseDate) values('{userId}', '{bookId}', '{purchaseDate}')")
-
-    # Create 50 reviews
-    print ('# Filling <reviews>')
-    for userId, bookId in pairs:
-        rating = faker.random_int(1, 5)
-        comment = faker.text(120).replace("'", "")
-        con.execute(f"insert into {SCHEMA_NAME}.reviews (UserId, BookId, Rating, Comment) values('{userId}', '{bookId}', '{rating}', '{comment}')")
-
     con.execute('commit')
+
+    # Create 100 items between purchases and reviews, simulating process for datamart populating
+    print ('# Filling <purchases> and <reviews>')
+    con = connect()
+    con.execute(f"select UserId, BookId from {SCHEMA_NAME}.user join {SCHEMA_NAME}.book on 1=1 order by RANDOM() limit 200")
+    pairs = con.fetchall()
+    users_with_cart = set()
+    bought_pair_unrated = set()
+    rc = connect_rc()
+
+    for i in range(200):
+        print(i)
+        random_number = random.randint(0, 5)
+        # 0 -> add to cart
+        # 1, 2 -> purchse cart
+        # 3, 4, 5 -> add review
+    
+        if random_number in range(3, 6) and len(bought_pair_unrated) > 0: # add review
+            userId, bookId = random.choice(list(bought_pair_unrated))
+            bought_pair_unrated.remove((userId, bookId))
+            rating = faker.random_int(1, 5)
+            comment = faker.text(120).replace("'", "")
+           
+            query_data = {
+                'UserId': userId,
+                'BookId': bookId,
+                'Rating': rating,
+                'Comment': comment
+            }
+            set_book_review(query_data)
+        
+        elif random_number in range(1, 3) and len(users_with_cart) > 0:  # purchase cart from user
+            userId = random.choice(list(users_with_cart))
+            users_with_cart.remove(userId)
+            
+            cart_key = f"{SCHEMA_NAME}_shop_cart_{query_data['UserId']}"
+            cart_items = rc.smembers(cart_key)
+            for bookId in cart_items:
+                bought_pair_unrated.add((userId, int(bookId))) 
+            
+            query_data = {
+                'UserId': userId
+            }
+            purchase_from_cart(query_data)
+        else:  # add to cart
+            userId, bookId = pairs.pop()
+            users_with_cart.add(userId)
+            
+            query_data = {
+                'UserId': userId,
+                'BookId': bookId,
+            }
+            add_to_cart(query_data)
+
 
 
 def drop_tables():
