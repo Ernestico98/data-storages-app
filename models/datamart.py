@@ -12,7 +12,7 @@ class DataMart:
     BookId = DBForeignKey(Book, "BookId")
     DateTime = DBDatetime()
     Price = DBMoney()
-    RatingAtBuy = DBFloat()
-    CartNumberAtBuy = DBInt()
-    BoughtNumberAtBut = DBInt()
+    Rating = DBFloat()
+    Amount_In_Cart = DBInt()
+    Purchased_Amount = DBInt()
     
