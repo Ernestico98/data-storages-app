@@ -27,7 +27,7 @@ def populate_tables():
         con.execute(f"select userId from {SCHEMA_NAME}.user where email = '{email}'")
         
         userId = con.fetchone()[0]
-        balance = faker.random_int(10, 1000)
+        balance = faker.random_int(1000, 2000)
         profilePicture = faker.file_path()
         country = faker.country().replace("'", "")
         nickName = faker.user_name()
@@ -56,7 +56,7 @@ def populate_tables():
         title = faker.text(20).replace("'", "")
         coverImage = faker.file_path()
         publishDate = faker.date_time().strftime("%Y-%m-%d")
-        price = faker.random_int(10, 1000)
+        price = faker.random_int(10, 50)
 
         con.execute(f"select PublisherId from {SCHEMA_NAME}.publisher order by RANDOM() limit 1")
         publisherId = con.fetchone()[0]
@@ -107,13 +107,16 @@ def populate_tables():
             
             cart_key = f"{SCHEMA_NAME}_shop_cart_{query_data['UserId']}"
             cart_items = rc.smembers(cart_key)
-            for bookId in cart_items:
-                bought_pair_unrated.add((userId, int(bookId))) 
             
             query_data = {
                 'UserId': userId
             }
-            purchase_from_cart(query_data)
+            message = purchase_from_cart(query_data)
+            print(message)
+            if message == "Purchase created successfully":
+                for bookId in cart_items:
+                    bought_pair_unrated.add((userId, int(bookId))) 
+
         else:  # add to cart
             userId, bookId = pairs.pop()
             users_with_cart.add(userId)
