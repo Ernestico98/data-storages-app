@@ -9,6 +9,7 @@ from services.purchases_service import get_purchases_count, get_purchases_by_use
 from services.books_service import get_books_by_author, create_book, get_total_sales_by_book, get_top_10_books_by_avg_rating, set_book_review
 from services.users_service import create_user
 from services.stats_service import reset_stats, get_purchases_book_stats
+from services.datamart_service import top_ten_users_by_purchases, total_revenue_per_book, correlation_total_revenue_rating
 
 QUERIES = [
     get_purchases_count,
@@ -26,7 +27,10 @@ QUERIES = [
     get_cart_contents,
     reset_stats,
     get_purchases_book_stats,
-    set_book_review
+    set_book_review,
+    top_ten_users_by_purchases,
+    total_revenue_per_book,
+    correlation_total_revenue_rating
 ]
 
 if __name__ == "__main__":
