@@ -1,6 +1,5 @@
 # this code comes after the table creation.
-import os
-import json
+from tqdm import tqdm
 import random
 
 from manager.model_list import MODELS
@@ -80,8 +79,9 @@ def populate_tables():
     bought_pair_unrated = set()
     rc = connect_rc()
 
-    for i in range(200):
-        print(i)
+
+    iter_bar = tqdm(range(200), 'Random generator')
+    for _ in iter_bar:
         random_number = random.randint(0, 5)
         # 0 -> add to cart
         # 1, 2 -> purchse cart
@@ -112,7 +112,6 @@ def populate_tables():
                 'UserId': userId
             }
             message = purchase_from_cart(query_data)
-            print(message)
             if message == "Purchase created successfully":
                 for bookId in cart_items:
                     bought_pair_unrated.add((userId, int(bookId))) 
